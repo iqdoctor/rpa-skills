@@ -6,8 +6,8 @@
 # Use this for agents that have NO remote plugin marketplace (Cursor, and any
 # other tool that discovers skills from a folder). Claude Code and Codex users
 # should prefer the native marketplace instead — see README.md:
-#   Claude Code:  /plugin marketplace add EvilFreelancer/rpa-skills
-#   Codex:        codex plugin marketplace add EvilFreelancer/rpa-skills
+#   Claude Code:  /plugin marketplace add iqdoctor/rpa-skills
+#   Codex:        codex plugin marketplace add iqdoctor/rpa-skills
 #
 # What it does: clones (or updates) each split-out skill repository into a
 # skills root. The default root is ~/.agents/skills, which is read as a global
@@ -24,6 +24,8 @@
 set -euo pipefail
 
 OWNER="EvilFreelancer"
+CATALOG_OWNER="iqdoctor"
+LOGIKA_OWNER="iqdoctor"
 SKILLS_DIR="${SKILLS_DIR:-$HOME/.agents/skills}"
 
 ALL_SKILLS=(
@@ -75,9 +77,21 @@ echo
 
 for name in "${SKILLS[@]}"; do
   dest="$SKILLS_DIR/$name"
-  url="https://github.com/$OWNER/$name.git"
+  owner="$OWNER"
+  if [ "$name" = "logika" ]; then
+    owner="$LOGIKA_OWNER"
+  fi
+  url="https://github.com/$owner/$name.git"
   if [ -d "$dest/.git" ]; then
     echo "↻ updating $name"
+    if [ "$name" = "logika" ]; then
+      current_url="$(git -C "$dest" remote get-url origin 2>/dev/null || true)"
+      if [ -n "$current_url" ] && [ "$current_url" != "$url" ]; then
+        git -C "$dest" remote set-url origin "$url"
+      elif [ -z "$current_url" ]; then
+        git -C "$dest" remote add origin "$url"
+      fi
+    fi
     git -C "$dest" pull --ff-only --quiet || echo "  ! could not fast-forward $name (local changes?)" >&2
   else
     echo "↓ cloning  $name"
@@ -88,4 +102,4 @@ done
 echo
 echo "Done. Reload your agent to pick up the skills:"
 echo "  Cursor:  Cmd/Ctrl+Shift+P → \"Developer: Reload Window\""
-echo "  Codex:   restart Codex (or run: codex plugin marketplace add $OWNER/rpa-skills)"
+echo "  Codex:   restart Codex (or run: codex plugin marketplace add $CATALOG_OWNER/rpa-skills)"

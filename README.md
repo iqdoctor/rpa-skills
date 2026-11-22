@@ -23,7 +23,7 @@ paste the same long instructions into chat every time.
 | [/rpa-gen-rules](https://github.com/EvilFreelancer/rpa-gen-rules) | Create or refresh root `AGENTS.md`, native **Cursor** and **Claude Code** rules, and the **Codex** project hook that attaches Cursor rules without a separate manual index. Includes layered architecture, BDD/TDD, and mandatory Rules Sync for deliberate mirrors. |
 | [/rpa-feat](https://github.com/EvilFreelancer/rpa-feat) | Add a feature strictly **by BDD**: plan, tests (**red**), implementation (**green**), full run, docs and examples, **linter** at the end. **Requires** a clear task. |
 | [/rpa-bugfix](https://github.com/EvilFreelancer/rpa-bugfix) | **Reproduction test** first, then fix, full test run, **short report**. **Requires** a clear bug description. |
-| [/logika](https://github.com/EvilFreelancer/logika) | Classical formal logic from G. Chelpanov's textbook (concepts, judgments, syllogisms, induction, fallacies). |
+| [/logika](https://github.com/iqdoctor/logika) | Classical formal logic from G. Chelpanov's textbook (concepts, judgments, syllogisms, induction, fallacies); includes a provenance-documented OCR transcript of the complete 1917 ninth edition. |
 | [/token-cost](https://github.com/EvilFreelancer/token-cost) | Estimate the **floor cost** of a self-hosted LLM token (electricity + hardware amortization), not the market price. |
 | [/mikrotik-config-gen](https://github.com/EvilFreelancer/mikrotik-config-gen) | Generate secure **MikroTik RouterOS v7** configs from plain language, or **review and harden** an existing `/export`. Hardening baseline, four presets, per-model device reference, offline validator. |
 | [/screenshotting-gui](https://github.com/EvilFreelancer/screenshotting-gui) | Capture clean, repeatable screenshots of a **GUI desktop app** (IDEs, browsers, native apps) on an isolated **Xvfb** display, driven with **python-Xlib** (XTEST), annotated with **ImageMagick** (highlight box, crop, arrow). Never touches the operator's live desktop. |
@@ -51,8 +51,8 @@ none of them, it has the catalog built in:
 | File | Consumed by | How you connect it |
 |------|-------------|--------------------|
 | built into Coddy | **[Coddy](https://coddy.dev)** | nothing to connect: `coddy skills sync` |
-| [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) | **Claude Code** (also read by Codex as a legacy fallback) | `/plugin marketplace add EvilFreelancer/rpa-skills` |
-| [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) | **Codex** | `codex plugin marketplace add EvilFreelancer/rpa-skills` |
+| [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) | **Claude Code** (also read by Codex as a legacy fallback) | `/plugin marketplace add iqdoctor/rpa-skills` |
+| [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) | **Codex** | `codex plugin marketplace add iqdoctor/rpa-skills` |
 | [`install.sh`](install.sh) | **Cursor** and any folder-based agent | clones skills into `~/.agents/skills/` |
 
 > All three point at the per-skill repositories listed above. Make sure those repositories exist and are
@@ -63,7 +63,7 @@ none of them, it has the catalog built in:
 Add this repo as a plugin marketplace, then install any skill from it:
 
 ```text
-/plugin marketplace add EvilFreelancer/rpa-skills
+/plugin marketplace add iqdoctor/rpa-skills
 /plugin install rpa-init@rpa-skills
 /plugin install logika@rpa-skills
 # ...and so on
@@ -74,7 +74,7 @@ Add this repo as a plugin marketplace, then install any skill from it:
 Codex has its own repo marketplace. Add this catalog, then browse/install from `/plugins`:
 
 ```bash
-codex plugin marketplace add EvilFreelancer/rpa-skills
+codex plugin marketplace add iqdoctor/rpa-skills
 codex plugin marketplace list        # verify it resolved
 # then in the CLI: run `codex`, open `/plugins`, pick the "RPA Skills" tab, install what you need
 ```
@@ -84,15 +84,17 @@ Claude manifest above as a legacy-compatible source, so either entry point works
 
 ### Coddy
 
-[Coddy](https://coddy.dev) has this catalog built in as a system source: it is in effect on every machine
-without being declared in any file, so there is nothing to connect. One command installs every skill of
-the catalog into `~/.coddy/skills/` and keeps them up to date (**Sync all** in Settings → Skills does the
-same):
+[Coddy](https://coddy.dev) has the **upstream** `EvilFreelancer/rpa-skills` catalog built in as a system
+source. This `iqdoctor/rpa-skills` fork is not part of that built-in catalog, so `coddy skills sync` does
+not install this fork's version of `/logika`. To use it, clone this catalog and install just that skill:
 
 ```bash
-coddy skills sync                 # install or update everything the catalog publishes
-coddy plugin marketplace list     # shows EvilFreelancer/rpa-skills as built into Coddy
+git clone https://github.com/iqdoctor/rpa-skills && cd rpa-skills
+./install.sh -d ~/.coddy/skills logika
 ```
+
+To install or update the skills in Coddy's built-in upstream catalog, use `coddy skills sync` or **Sync
+all** in Settings → Skills.
 
 `/crossreview` and the `rpa-*` skills (`/rpa-init`, `/rpa-feat`, `/rpa-bugfix`, `/rpa-gen-rules`) ship
 inside Coddy itself and are there on the first run, offline. To drop a skill, disable or delete it
@@ -106,10 +108,10 @@ folders into a skills root the agent reads:
 
 ```bash
 # install/update the whole catalog into ~/.agents/skills (read by Cursor and Codex)
-curl -fsSL https://raw.githubusercontent.com/EvilFreelancer/rpa-skills/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/iqdoctor/rpa-skills/main/install.sh | bash
 
 # or clone the repo and run it, optionally targeting a specific root / subset
-git clone https://github.com/EvilFreelancer/rpa-skills && cd rpa-skills
+git clone https://github.com/iqdoctor/rpa-skills && cd rpa-skills
 ./install.sh                       # -> ~/.agents/skills
 ./install.sh -d ~/.cursor/skills   # -> a Cursor-specific root
 ./install.sh logika rpa-init       # only the named skills
@@ -123,7 +125,7 @@ Every skill repo keeps its `SKILL.md` at the repo root, so you can clone one str
 The directory name must match the `name` field in `SKILL.md`:
 
 ```bash
-git clone https://github.com/EvilFreelancer/logika ~/.agents/skills/logika
+git clone https://github.com/iqdoctor/logika ~/.agents/skills/logika
 ```
 
 ## Typical skill layout

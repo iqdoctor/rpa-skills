@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Pavel Rykov's agent-skills marketplace for Claude Code, OpenAI Codex, Cursor, Kimi Code CLI and other agents.",
-    "version": "2.9.0"
+    "version": "2.9.1"
   },
   "plugins": [
     {
@@ -61,11 +61,11 @@
       "name": "logika",
       "source": {
         "source": "url",
-        "url": "https://github.com/EvilFreelancer/logika.git",
+        "url": "https://github.com/iqdoctor/logika.git",
         "ref": "main"
       },
-      "description": "Classical formal logic from G. Chelpanov's textbook: concepts, judgments, syllogisms, induction, fallacies, laws of thought.",
-      "version": "2.1.0",
+      "description": "Classical formal logic from G. Chelpanov's textbook: concepts, judgments, syllogisms, induction, fallacies, laws of thought, with an OCR transcript of the complete 1917 ninth edition.",
+      "version": "2.1.1",
       "category": "reasoning",
       "license": "MIT"
     },
